@@ -1,0 +1,522 @@
+Design and Implementation of Heat Controller using LM35
+
+#include <LiquidCrystal.h>
+const int rs = 0, en = 1, d4 = 2, d5 = 3, d6 = 4, d7 = 5;
+LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
+int temp=A0;
+float tempc,tempd;
+int motor=13;
+void setup() {
+ pinMode(temp,INPUT);
+ pinMode(motor,OUTPUT);
+ lcd.begin(16,2);
+}
+void loop() {
+ 
+ tempc=analogRead(temp);
+ tempd=(tempc*4.88)/10;
+ lcd.setCursor(0,0);
+ lcd.println("Temp is");
+ lcd.println(tempd);
+ if (tempd > 25 ) {
+ lcd.clear();
+ lcd.setCursor(0, 1);
+ lcd.println("Fan on ");
+ digitalWrite(motor, HIGH);
+ 
+ }
+ else if(tempd<=25){
+ lcd.clear();
+ lcd.setCursor(0, 1);
+ lcd.println("Fan off "); 
+ digitalWrite(motor, LOW); 
+ }
+}
+
+Motion detection using PIR Motion Sensor
+
+char pir=A0;
+int led=12;
+int buz=13;
+int in;
+void setup() {
+ pinMode(pir,INPUT);
+ pinMode(led,OUTPUT);
+ pinMode(buz,OUTPUT); 
+ 
+}
+void loop() {
+ in=digitalRead(pir);
+if (in==0) {
+ digitalWrite(led, 0);
+ digitalWrite(buz, 0);
+ 
+}
+else{
+ digitalWrite(led, 1);
+ digitalWrite(buz, 1); 
+}
+}
+
+Door lock and unlock with password interfacing Keypad with Arduino
+
+#include<Keypad.h>
+#include<LiquidCrystal.h>
+#define Password_Lenght 5
+LiquidCrystal lcd(13,12,11,10,9,8);
+int In1 = 5;
+int In2 = 4;
+int ENA = 3;
+char Data[Password_Lenght];
+char Master[Password_Lenght] = "4321";
+byte data_count = 0, master_count = 0;
+const byte ROWS = 4;
+const byte COLS = 3;
+char keys[ROWS][COLS] = {
+{'1','2','3'},
+{'4','5','6'},
+{'7','8','9'},
+{'*','0','#'}
+};
+byte rowPins[ROWS] = {A5,A4,A3,A2};
+byte colPins[COLS] = {0,1,2};
+Keypad keypad1 = Keypad(makeKeymap(keys), rowPins,colPins,ROWS,COLS);
+void setup() {
+pinMode(7,OUTPUT);
+lcd.begin(16,2);
+pinMode(In1,OUTPUT);
+pinMode(In2,OUTPUT);
+lcd.setCursor(1,0);
+lcd.print("17/ICT/025");
+delay(1000);
+lcd.clear();
+lcd.setCursor(4,0);
+lcd.print("Arduino");
+lcd.setCursor(3,1);
+lcd.print("Door Lock");
+delay(2000);
+lcd.clear();
+digitalWrite(In1,0);
+digitalWrite(In2,0);
+}
+void loop() {
+lcd.setCursor(0,0);
+lcd.print("Enter Password:");
+char key = keypad1.getKey();
+if (key){
+Data[data_count] = key; 
+lcd.setCursor(data_count, 1); 
+lcd.print("*"); 
+data_count++;
+}
+if (data_count == Password_Lenght-1){
+if (!strcmp(Data, Master)){
+lcd.clear();
+lcd.setCursor(0, 0);
+lcd.print("Valid Password");
+lcd.setCursor(0, 1);
+lcd.print("Door Unlocked");
+analogWrite(ENA,255);
+digitalWrite(In1,1);
+digitalWrite(In2,0);
+delay(5000);
+digitalWrite(In1,0);
+digitalWrite(In2,0);
+delay(3000);
+lcd.clear();
+lcd.print("Door Locked");
+digitalWrite(In1,0);
+digitalWrite(In2,1);
+delay(5000);
+digitalWrite(In1,0);
+digitalWrite(In2,0);
+}else{
+lcd.clear();
+lcd.setCursor(0, 0);
+lcd.print("Invalid Password");
+lcd.setCursor(5, 1);
+lcd.print("Blocked!");
+digitalWrite(7,HIGH);
+delay(3000);
+lcd.clear();
+digitalWrite(7,LOW);
+lcd.print("Enter Password:");
+}
+data_count = 0;
+}
+}
+
+utomated Street Lamp using LDR (Light Dependent Resistor).
+
+#include <LiquidCrystal.h>
+LiquidCrystal lcd(13,12,11,10,9,8);
+int sensorValue = 0;
+void setup (){
+pinMode(2,OUTPUT);
+pinMode(A0,INPUT);
+lcd.begin(16,2);
+}
+void loop(){
+int sensorValue = analogRead(A0);
+if(sensorValue>370){
+digitalWrite(2,HIGH);
+} else if(sensorValue<370){
+digitalWrite(2,LOW); 
+}
+lcd.setCursor(0,0);
+lcd.print("Resistance ");
+lcd.print(sensorValue);
+}
+
+Design and Implementation of Obstacle Detector using Arduino UNO interfacing IR Sensor
+
+#include <LiquidCrystal.h>
+LiquidCrystal lcd(13,12,11,10,9,8);
+int sensorValue = 0;
+void setup() {
+lcd.begin(16,2);
+pinMode(0,INPUT);
+pinMode(7,OUTPUT);
+}
+void loop() {
+sensorValue = digitalRead(0);
+if(sensorValue == 0){
+lcd.setCursor(1,0);
+lcd.print("Object Detected");
+digitalWrite(7,HIGH);
+delay(100);
+digitalWrite(7,LOW);
+delay(100);
+lcd.clear();
+}else{
+lcd.setCursor(0,0);
+lcd.print("Obstacle");
+lcd.setCursor(5,1);
+lcd.print("Detecting...");
+digitalWrite(7,LOW);
+delay(1000);
+lcd.clear();
+}
+}
+
+Traffic Light
+
+int signal1[] = {0,1,2};
+int signal2[] = {3,4,5};
+int signal3[] = {6,7,8};
+int signal4[] = {9,10,11};
+void setup(){
+ for (int i = 0; i < 3; i++){
+ pinMode(signal1[i], OUTPUT);
+ pinMode(signal2[i], OUTPUT);
+ pinMode(signal3[i], OUTPUT);
+ pinMode(signal4[i], OUTPUT);
+ }
+}
+void loop()
+{
+ digitalWrite(signal1[0], HIGH); //green on
+ digitalWrite(signal1[2], LOW); //red off
+ digitalWrite(signal2[2], HIGH); //red on
+ digitalWrite(signal3[2], HIGH); //red on
+ digitalWrite(signal4[2], HIGH); //red on
+ digitalWrite(signal4[1], LOW); //yellow off
+ delay(2000); //red bulb
+ digitalWrite(signal1[0], LOW); //green off
+ digitalWrite(signal1[1], HIGH); //yellow on
+ delay(1000); //yellow bulb
+ digitalWrite(signal1[1], LOW); //yellow off
+ digitalWrite(signal1[2], HIGH); //red on
+ digitalWrite(signal2[0], HIGH); //green on
+ digitalWrite(signal2[2], LOW); //red off
+ digitalWrite(signal3[2], HIGH); //red on
+ digitalWrite(signal4[2], HIGH); //red off
+ delay(2000); //red bulb
+ digitalWrite(signal2[0], LOW); //green off
+ digitalWrite(signal2[1], HIGH); //yellow on
+ delay(1000); //yellow bulb
+ digitalWrite(signal2[1], LOW); //yellow off
+ digitalWrite(signal2[2], HIGH); //red on
+ digitalWrite(signal1[2], HIGH); //red on
+ digitalWrite(signal3[2], LOW); //red off
+ digitalWrite(signal3[0], HIGH); //green on
+ digitalWrite(signal4[2], HIGH); //red on
+ delay(2000); //red bulb
+ digitalWrite(signal3[0], LOW); //green off
+ digitalWrite(signal3[1], HIGH); //yellow on
+ delay(1000); //yellow bulb
+ digitalWrite(signal3[1], LOW); //yellow off
+ digitalWrite(signal3[2], HIGH); //red on
+ digitalWrite(signal1[2], HIGH); //red on
+ digitalWrite(signal2[2], HIGH); //red on
+ digitalWrite(signal4[0], HIGH); //green on
+ digitalWrite(signal4[2], LOW); //red off
+ delay(2000); //red bulb
+ digitalWrite(signal4[0], LOW); //green off
+ digitalWrite(signal4[1], HIGH); //yellow on
+ delay(1000); //yellow bulb
+ 
+}
+
+Calculator
+
+#include <Keypad.h>
+#include <LiquidCrystal.h>
+LiquidCrystal lcd(13, 12, 11, 10, 9, 8);
+char Keymap[4][4]=
+{
+{'7', '8', '9', '/'},
+{'4', '5', '6', '*'},
+{'1', '2', '3', '-'},
+{'C', '0', '=', '+',}
+};
+byte rowPins [4] ={0,1,2,3};
+byte colPins [4] ={4,5,6,7};
+Keypad myKeypad = Keypad(makeKeymap(Keymap), rowPins, colPins, 4, 4);
+boolean presentValue = false;
+boolean next = false;
+boolean final = false;
+String num1, num2;
+int answer;
+char opr;
+void setup() {
+// put your setup code here, to run once:
+lcd.begin(16,2);
+lcd.setCursor(3,0);
+lcd.print("Electronic");
+lcd.setCursor(3,1);
+lcd.print("Calculator");
+delay(500);
+lcd.clear();
+}
+void loop() {
+// put your main code here, to run repeatedly:
+char key = myKeypad.getKey();
+if(key != NO_KEY &&
+(key=='1'||key=='2'||key=='3'||key=='4'||key=='5'||key=='6'||key=='7'||key=='8'||key=='9'||k
+ey=='0'))
+{
+if(presentValue != true)
+{
+num1 = num1 + key;
+lcd.setCursor(12,0);
+lcd.print(num1);
+}
+else
+{
+num2 = num2 + key;
+lcd.setCursor(12,1);
+lcd.print(num2);
+final = true;
+}
+}
+else if (presentValue == false && key != NO_KEY && (key == '/' || key == '*' || key == '-' || key 
+==
+'+'))
+{
+if (presentValue == false)
+{
+presentValue = true;
+opr = key;
+lcd.setCursor(15,0);
+lcd.print(opr);
+}
+}
+else if (final == true && key != NO_KEY && key == '=')
+{
+if (opr == '+')
+{
+answer = num1.toInt() + num2.toInt();
+}
+else if (opr == '-')
+{
+answer = num1.toInt() - num2.toInt();
+}
+else if (opr == '*')
+{
+answer = num1.toInt() * num2.toInt();
+}
+else if (opr == '/')
+{
+answer = num1.toInt() / num2.toInt();
+}
+lcd.clear();
+lcd.setCursor(15,0);
+lcd.autoscroll();
+lcd.print(answer);
+lcd.noAutoscroll();
+}
+else if (key != NO_KEY && key == 'C')
+{
+lcd.clear();
+presentValue = false;
+final = false;
+num1 = "";
+num2 = "";
+answer = 0;
+opr = ' ';
+}
+}
+
+Seven segment
+
+int count = 0; 
+int ds = 500;
+void setup() { 
+ pinMode(13, OUTPUT); 
+ pinMode(12, OUTPUT); 
+ pinMode(11, OUTPUT); 
+ pinMode(10, OUTPUT); 
+ pinMode(9, OUTPUT); 
+ pinMode(8, OUTPUT); 
+ pinMode(7, OUTPUT); 
+ pinMode(6, OUTPUT); 
+ pinMode(5, OUTPUT); 
+ pinMode(4, OUTPUT); 
+ pinMode(3, OUTPUT); 
+ pinMode(2, OUTPUT); 
+ pinMode(1, OUTPUT); 
+ pinMode(0, OUTPUT); 
+}
+void loop() {
+ 
+digitalWrite(13, 1); 
+digitalWrite(12, 1); 
+digitalWrite(11, 1); 
+digitalWrite(10, 1); 
+digitalWrite(9, 1);
+digitalWrite(8, 1);
+digitalWrite(7, 0);
+delay(ds);
+digitalWrite(13, 0);
+digitalWrite(12, 1); 
+digitalWrite(11, 1); 
+digitalWrite(10, 0); 
+digitalWrite(9, 0);
+digitalWrite(8, 0);
+digitalWrite(7, 0);
+delay(ds);
+digitalWrite(13, 1);
+digitalWrite(12, 1); 
+digitalWrite(11, 0); 
+digitalWrite(10, 1); 
+digitalWrite(9, 1);
+digitalWrite(8, 0);
+digitalWrite(7, 1);
+delay(ds);
+digitalWrite(13, 1);
+digitalWrite(12, 1); 
+digitalWrite(11, 1); 
+digitalWrite(10, 1); 
+digitalWrite(9, 0);
+digitalWrite(8, 0);
+digitalWrite(7, 1);
+delay(ds);
+digitalWrite(13, 0); 
+digitalWrite(12, 1); 
+digitalWrite(11, 1); 
+digitalWrite(10, 0); 
+digitalWrite(9, 0);
+digitalWrite(8, 1);
+digitalWrite(7, 1);
+delay(ds);
+digitalWrite(13, 1);
+digitalWrite(12, 0); 
+digitalWrite(11, 1); 
+digitalWrite(10, 1); 
+digitalWrite(9, 0);
+digitalWrite(8, 1);
+digitalWrite(7, 1);
+delay(ds);
+digitalWrite(13, 1);
+digitalWrite(12, 0); 
+digitalWrite(11, 1); 
+digitalWrite(10, 1); 
+digitalWrite(9, 1);
+digitalWrite(8, 1);
+digitalWrite(7, 1);
+delay(ds);
+digitalWrite(13, 1);
+digitalWrite(12, 1); 
+digitalWrite(11, 1); 
+digitalWrite(10, 0); 
+digitalWrite(9, 0);
+digitalWrite(8, 0);
+digitalWrite(7, 0);
+delay(ds);
+digitalWrite(13, 1);
+digitalWrite(12, 1); 
+digitalWrite(11, 1); 
+digitalWrite(10, 1); 
+digitalWrite(9, 1);
+digitalWrite(8, 1);
+digitalWrite(7, 1);
+delay(ds);
+digitalWrite(13, 1);
+digitalWrite(12, 1); 
+digitalWrite(11, 1); 
+digitalWrite(10, 1); 
+digitalWrite(9, 0);
+digitalWrite(8, 1);
+digitalWrite(7, 1);
+delay(ds);
+count++;
+if (count == 0){ 
+ digitalWrite(6, 1);
+ digitalWrite(5, 1);
+ digitalWrite(4, 1);
+ digitalWrite(3, 1);
+ digitalWrite(2, 1);
+ digitalWrite(1, 1);
+ digitalWrite(0, 0);
+}
+if (count == 1){ 
+ digitalWrite(6, 0);
+ digitalWrite(5, 1);
+ digitalWrite(4, 1);
+ digitalWrite(3, 0);
+ digitalWrite(2, 0);
+ digitalWrite(1, 0);
+ digitalWrite(0, 0);
+}
+if (count == 2){ 
+ digitalWrite(5, 1);
+ digitalWrite(4, 0);
+ digitalWrite(3, 1);
+ digitalWrite(2, 1);
+ digitalWrite(1, 0);
+ digitalWrite(0, 1);
+}
+ if (count == 3){ 
+ digitalWrite(6, 1);
+ digitalWrite(5, 1);
+ digitalWrite(4, 1);
+ digitalWrite(3, 1);
+ digitalWrite(2, 0);
+ digitalWrite(1, 0);
+ digitalWrite(0, 1);
+}
+ if (count == 4){ 
+ digitalWrite(6, 0);
+ digitalWrite(5, 1);
+ digitalWrite(4, 1);
+ digitalWrite(3, 0);
+ digitalWrite(2, 0);
+ digitalWrite(1, 1);
+ digitalWrite(0, 1);
+}
+ if (count == 5){ 
+ digitalWrite(6, 1);
+ digitalWrite(5, 0);
+ digitalWrite(4, 1);
+ digitalWrite(3, 1);
+ digitalWrite(2, 0);
+ digitalWrite(1, 1);
+ digitalWrite(0, 1);
+ 
+ count = 0;
+ 
+ }
+ 
+}
+
