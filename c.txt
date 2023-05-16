@@ -87,7 +87,7 @@ lcd.begin(16,2);
 pinMode(In1,OUTPUT);
 pinMode(In2,OUTPUT);
 lcd.setCursor(1,0);
-lcd.print("17/ICT/025");
+lcd.print("000");
 delay(1000);
 lcd.clear();
 lcd.setCursor(4,0);
